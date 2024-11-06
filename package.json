@@ -1,0 +1,8 @@
+{
+  "name": "go-test",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "start": "cd src  && air --build.cmd 'go build -C cmd -o ../../dist/app ./...' --build.bin '../dist/app'"
+  }
+}
