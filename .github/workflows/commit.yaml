@@ -31,8 +31,6 @@ jobs:
           for file in ${{ steps.changed-files.outputs.changed_files }}; do
             echo "$file was changed"
           done
-          echo "::error::Something went wrong: The condition was not met."
-          exit 1
 
       - name: calculate version
         id: calculate-version
@@ -44,4 +42,4 @@ jobs:
           
       - name: Use version
         run: | 
-          echo "Calculated version: ${{ steps.calculate-version.outputs.version-string }}"    
+          echo "::notice:: Calculated version: ${{ steps.calculate-version.outputs.version-string }}"    
