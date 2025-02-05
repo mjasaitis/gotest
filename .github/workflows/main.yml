@@ -24,4 +24,4 @@ jobs:
           # Add your deployment logic here
           echo "Deploying version ${{ github.event.inputs.app_version }}"
           # Example: Use the version in a deployment script
-          ./deploy.sh ${{ github.event.inputs.app_version }}
+          ./deploy.sh "${{ github.event.inputs.app_version }}"
