@@ -30,7 +30,8 @@ jobs:
         run: |
           for file in ${{ steps.changed-files.outputs.changed_files }}; do
             echo "$file was changed"
-          done          
+          done
+          exit 1
 
       - name: calculate version
         id: calculate-version
