@@ -1,4 +1,4 @@
-#!/usr/bin/sh
+#!/bin/bash
 
 odate() {
         date '+%Y.%m.%d %H:%M:%S'
@@ -18,13 +18,13 @@ LOG_FILE=""
 load_so_ehi () {
 CC=$1
 
-    if [ $CC == "LT" ]
+    if [ "$CC" == "LT" ]
         then SO="Pos channel Lithuania"
              EHI="KB0023171"
-    elif [ $CC == "LV" ]
+    elif [ "$CC" == "LV" ]
         then SO="Pos channel Latvia"
              EHI="KB0023170"
-    elif [ $CC == "EE" ]
+    elif [ "$CC" == "EE" ]
         then SO="Pos channel Estonia"
              EHI="KB0023169"
     else 
@@ -45,9 +45,9 @@ send_event() {
     msg="${CC} POS have errors: "
     txt="$msg $MONTEXT"
     
-    load_so_ehi ${CC}
+    load_so_ehi "${CC}"
     
-    echo $MONTEXT | /usr/bin/mailx -s "!!! $txt !!!" -r $SENDER $RECIEVER
+    echo "$MONTEXT" | /usr/bin/mailx -s "!!! $txt !!!" -r $SENDER $RECIEVER
 
     CURLREZULT=$(curl --insecure -X POST ${URL} -H 'Authorization: API-Key '${API_KEY}'' -H 'Content-Type: application/json' -d '{
         "severity": "'"$SEVERITY"'",
@@ -78,18 +78,18 @@ CURST=$5 # NEW  aka CURRENT STATUS
 
 RECIEVER=$MAILUSER
 
-load_so_ehi ${CC}
+load_so_ehi "${CC}"
 
-if [ $CURST == "CRASH" ]
+if [ "$CURST" == "CRASH" ]
 then     
     MONTEXT="${CC}_POS_${SERVERNAME}.$PROCESS process crashed (no process with given pid)"
     MAILTEXT="[${CC}]-[$CURST]-[${PROCESS}]-[${SERVERNAME}] crashed"
     AUTO_CREATE_INCIDENT=true
 fi
 
-if [ $CURST == "DOWN" ]
+if [ "$CURST" == "DOWN" ]
 then
-    if [ $WHATMON == "PORT" ]
+    if [ "$WHATMON" == "PORT" ]
     then
         MONTEXT="${CC}_POS_${SERVERNAME}.Port $PROCESS is down"
         MAILTEXT="[${CC}]-[$CURST]-[PORT ${PROCESS}]-[${SERVERNAME}] down"
@@ -100,9 +100,9 @@ then
     AUTO_CREATE_INCIDENT=true
 fi
 
-if [ $CURST == "UP" ]
+if [ "$CURST" == "UP" ]
 then
-    if [ $WHATMON == "PORT" ]
+    if [ "$WHATMON" == "PORT" ]
     then
         MONTEXT="${CC}_POS_${SERVERNAME}.Port $PROCESS is up"
         MAILTEXT="[${CC}]-[$CURST]-[PORT ${PROCESS}]-[${SERVERNAME}] up"
@@ -113,15 +113,15 @@ then
     AUTO_CREATE_INCIDENT=false
 fi
 
-if [ $SEVERITY == "CRITICAL" ]
+if [ "$SEVERITY" == "CRITICAL" ]
 then     
     MONTEXT="${CC}_POS_${SERVERNAME} URGENT!!! POSHOST was not restarted after multiple attempts"
     MAILTEXT="[${CC}]-[$CURST]-[POSHOST]-[${SERVERNAME}]  was not restarted after multiple attempts"
     AUTO_CREATE_INCIDENT=true
 fi
 
-tail -20 ${HOME}/${CC}/log/${PROCESS}.log | /usr/bin/mailx -s "$MAILTEXT" -r $SENDER  $RECIEVER >> $HOME/$CC/log/${SCRIPTNAME}.log 
-echo "tail -20 ${HOME}/${CC}/log/${PROCESS}.log | /usr/bin/mailx -s \"$MAILTEXT\" -r $SENDER  $RECIEVER " >> $HOME/$CC/log/${SCRIPTNAME}.log 
+tail -20 "${HOME}"/"${CC}"/log/"${PROCESS}".log | /usr/bin/mailx -s "$MAILTEXT" -r $SENDER  "$RECIEVER" >> "$HOME"/"$CC"/log/"${SCRIPTNAME}".log 
+echo "tail -20 ${HOME}/${CC}/log/${PROCESS}.log | /usr/bin/mailx -s \"$MAILTEXT\" -r $SENDER  $RECIEVER " >> "$HOME"/"$CC"/log/"${SCRIPTNAME}".log 
 
 CURLREZULT=$(curl --insecure -X POST ${URL} -H 'Authorization: API-Key '${API_KEY}'' -H 'Content-Type: application/json' -d '{
     "severity": "'"$SEVERITY"'",
@@ -134,11 +134,11 @@ CURLREZULT=$(curl --insecure -X POST ${URL} -H 'Authorization: API-Key '${API_KE
     "attributes.snap.ehi": "'"${EHI}"'",    
     "attributes.snap.firstLine": "Operations Center",
     "attributes.snap.secondLine": "Cards Acquiring Baltics",
-    "attributes.snap.incident.auto_create": '${AUTO_CREATE_INCIDENT}'
+    "attributes.snap.incident.auto_create": '"${AUTO_CREATE_INCIDENT}"'
 }')
 
-echo -e "$CURLREZULT" >> $HOME/$CC/log/${SCRIPTNAME}.log
-echo -e "\n" >> $HOME/$CC/log/${SCRIPTNAME}.log
+echo -e "$CURLREZULT" >> "$HOME"/"$CC"/log/"${SCRIPTNAME}".log
+echo -e "\n" >> "$HOME"/"$CC"/log/"${SCRIPTNAME}".log
 
 if [ "${CURST}" != "UP" ]; then
     ID=$( echo "$CURLREZULT" | python3 -c "import sys, json; print(json.load(sys.stdin)['id'])" )
@@ -158,11 +158,11 @@ update_incident() {
   local currenttime=$(date +%H:%M)
 
   if [[ "$currenttime" > "22:00" ]] || [[ "$currenttime" < "06:00" ]]; then
-      curl --insecure -X PUT ${URL}/${INCIDENT_ID} -H 'Authorization: API-Key '${API_KEY}'' -H 'Content-Type: application/json' -d '{
+      curl --insecure -X PUT ${URL}/"${INCIDENT_ID}" -H 'Authorization: API-Key '${API_KEY}'' -H 'Content-Type: application/json' -d '{
           "status": "closed",
           "severity": "minor"
-      }' >> $HOME/$CC/log/${SCRIPTNAME}.log
-      echo -e "\n" >> $HOME/$CC/log/${SCRIPTNAME}.log
+      }' >> "$HOME"/"$CC"/log/"${SCRIPTNAME}".log
+      echo -e "\n" >> "$HOME"/"$CC"/log/"${SCRIPTNAME}".log
   fi
 }
 
@@ -175,25 +175,25 @@ check_status_and_send_event() {
   MESSAGE=$5
   FILE_NAME="${FILE_NAME}_get_txns.down"
 
-    if [ -f ${MONDIR}/${FILE_NAME} ] && [[ $(ls -1 ${MONDIR}/*get_txns.down | wc -l) > 1 ]] && [ "${STATUS}" == 'OK' ] ; then
-    rm ${MONDIR}/${FILE_NAME}
+    if [ -f "${MONDIR}"/"${FILE_NAME}" ] && [[ $(ls -1 "${MONDIR}"/*get_txns.down | wc -l) > 1 ]] && [ "${STATUS}" == 'OK' ] ; then
+    rm "${MONDIR}"/"${FILE_NAME}"
 
     else
-       if [ -f ${MONDIR}/${FILE_NAME} ] && [[ "${STATUS}" == 'OK' ]]; then
-          if [[ $((($(date +%s) - $(date -r ${MONDIR}/${FILE_NAME} +%s))/60)) -lt 5 ]]
+       if [ -f "${MONDIR}"/"${FILE_NAME}" ] && [[ "${STATUS}" == 'OK' ]]; then
+          if [[ $((($(date +%s) - $(date -r "${MONDIR}"/"${FILE_NAME}" +%s))/60)) -lt 5 ]]
                  then
-                 IN_ID=$(<${MONDIR}/${FILE_NAME})
-                 update_incident ${IN_ID} ${CC}
+                 IN_ID=$(<"${MONDIR}"/"${FILE_NAME}")
+                 update_incident "${IN_ID}" "${CC}"
           fi
-          rm ${MONDIR}/${FILE_NAME}
+          rm "${MONDIR}"/"${FILE_NAME}"
        fi
     fi
 
 
-    if [ ! -f ${MONDIR}/${FILE_NAME} ] && [ "${STATUS}" == 'DOWN' ] ; then
+    if [ ! -f "${MONDIR}"/"${FILE_NAME}" ] && [ "${STATUS}" == 'DOWN' ] ; then
 
-      local INCIDENT_ID=$(send_event ${CC} "${MESSAGE}")
-      echo "$INCIDENT_ID" > ${MONDIR}/${FILE_NAME}
+      local INCIDENT_ID=$(send_event "${CC}" "${MESSAGE}")
+      echo "$INCIDENT_ID" > "${MONDIR}"/"${FILE_NAME}"
 
     fi
 
@@ -201,7 +201,7 @@ check_status_and_send_event() {
 
 log_line() {
   local message="$1"
-  echo "`odate` $message" >>$LOG_FILE
+  echo "$(odate) $message" >>"$LOG_FILE"
 }
 
 send_alert() {
@@ -213,24 +213,24 @@ send_alert() {
     set_service_offering
 
     if [ $# -eq 2 ]; then
-        load_so_ehi ${PROGRAM_COUNTRY}
+        load_so_ehi "${PROGRAM_COUNTRY}"
     elif [ $# -eq 3 ]; then
         EHI=$3
     fi
 
     curl --insecure -X POST ${URL} -H 'Authorization: API-Key '${API_KEY}'' -H 'Content-Type: application/json' -d '{
       "severity": "minor",
-      "resource": "'${PROGRAM_COUNTRY}'_'${SERVERNAME}'_'${PROCESS}'",
-      "event": "'${PROCESS}'",
+      "resource": "'"${PROGRAM_COUNTRY}"'_'${SERVERNAME}'_'"${PROCESS}"'",
+      "event": "'"${PROCESS}"'",
       "environment": "'${ENVIRONMENT}'",
       "value": "ERROR",
-      "message": "'${PROGRAM_COUNTRY}' '${PROCESS}' '"${MESSAGE}"'",
+      "message": "'"${PROGRAM_COUNTRY}"' '"${PROCESS}"' '"${MESSAGE}"'",
       "service": [
           "'"${SERVICE_OFFERING}"'"
       ],
       "attributes": {
           "snap": {
-              "ehi": "'${EHI}'",
+              "ehi": "'"${EHI}"'",
               "incident": {
                   "first_line": "Operations Center",
                   "second_line": "Cards Acquiring Baltics",
@@ -241,7 +241,7 @@ send_alert() {
               "to": "'${RECIEVER}'"
           }
       }
-    }' >> ${LOG}
+    }' >> "${LOG}"
 }
 
 set_service_offering () {
