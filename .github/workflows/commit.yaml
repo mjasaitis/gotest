@@ -11,15 +11,23 @@ on:
 jobs:
   my_job:
     runs-on: ubuntu-latest
+    env:
+      MAIN_BRANCH: main
     steps:
-      - uses: actions/checkout@v3
+      - name: Code Checkout
+        uses: actions/checkout@v3
         with:
           fetch-depth: ${{ github.event_name == 'pull_request' && 2 || 0 }}
           fetch-tags: true
 
+      - name: Run ShellCheck
+        uses: Azbagheri/shell-linter@latest
+        with:
+          path: "src/*.sh"          
+
       - name: Get changed files
         id: changed-files
-        if: github.event_name == 'pull_request'
+        if: github.event_name == 'pull_request' && github.ref == format('refs/heads/{0}', env.MAIN_BRANCH)
         run: |
           #if ${{ github.event_name == 'pull_request' }}; then
           #  echo "changed_files=$(git diff --name-only -r HEAD^1 HEAD | xargs)" >> $GITHUB_OUTPUT
@@ -28,16 +36,16 @@ jobs:
           #fi
 
       - name: Upload changed files
-        if: github.event_name == 'pull_request'
+        if: github.event_name == 'pull_request' && github.ref == format('refs/heads/{0}', env.MAIN_BRANCH)
         run: |
           for file in ${{ steps.changed-files.outputs.changed_files }}; do
             echo "$file was uploaded"
           done
 
-      - name: calculate version
+      - name: Add tag version
         id: calculate-version
         uses: bitshifted/git-auto-semver@v1
-        if: github.event_name == 'pull_request'
+        if: github.event_name == 'pull_request' && github.ref == format('refs/heads/{0}', env.MAIN_BRANCH)
         with:
           main_branch: main
           create_tag: true
