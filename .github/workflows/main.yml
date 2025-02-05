@@ -1,0 +1,27 @@
+name: Deploy App
+
+on:
+  workflow_dispatch:
+    inputs:
+      app_version:
+        description: 'App version to deploy'
+        required: true
+        type: string
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Print app version
+        run: echo "Deploying app version: ${{ github.event.inputs.app_version }}"
+
+      - name: Deploy app
+        run: |
+          # Add your deployment logic here
+          echo "Deploying version ${{ github.event.inputs.app_version }}"
+          # Example: Use the version in a deployment script
+          ./deploy.sh ${{ github.event.inputs.app_version }}
