@@ -19,7 +19,8 @@ jobs:
       - name: Run ShellCheck
         uses: Azbagheri/shell-linter@latest
         with:
-          path: "src/*.sh"        
+          path: "src/*.sh"
+          severity: "error"
 
       - name: Print app version # Correct indentation
         run: | 
