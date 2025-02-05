@@ -1,3 +1,5 @@
+#!/usr/bin/sh
+
 odate() {
         date '+%Y.%m.%d %H:%M:%S'
 }
