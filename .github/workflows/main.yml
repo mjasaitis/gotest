@@ -16,6 +16,11 @@ jobs:
       - name: Checkout code  # Correct indentation for steps within 'steps'
         uses: actions/checkout@v3
 
+      - name: Run ShellCheck
+        uses: Azbagheri/shell-linter@latest
+        with:
+          path: "src/*.sh"        
+
       - name: Print app version # Correct indentation
         run: | 
           echo "Deploying app version: ${{github.event.inputs.app_version}}"
