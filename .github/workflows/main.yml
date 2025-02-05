@@ -12,16 +12,17 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
 
-    steps:
-      - name: Checkout code
+    steps: # Correct indentation for 'steps'
+      - name: Checkout code  # Correct indentation for steps within 'steps'
         uses: actions/checkout@v3
 
-      - name: Print app version
-        run: echo "Deploying app version: ${{ github.event.inputs.app_version }}"
+      - name: Print app version # Correct indentation
+        run: | 
+          echo "Deploying app version: ${{github.event.inputs.app_version}}"
 
-      - name: Deploy app
-        run: |
+      - name: Deploy app # Correct indentation
+        run: | # Correct indentation
           # Add your deployment logic here
           echo "Deploying version ${{ github.event.inputs.app_version }}"
           # Example: Use the version in a deployment script
-          ./deploy.sh "${{ github.event.inputs.app_version }}"
+          ./deploy.sh '${{ github.event.inputs.app_version }}'
