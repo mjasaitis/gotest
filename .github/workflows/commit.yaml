@@ -3,33 +3,30 @@ name: On Commit Action
 on:
   push:
     branches:
-      - main # Or any other branch you want to trigger on
+      - main
   pull_request:
     branches:
-      - main # Or any other branch you want to trigger on
+      - main
 
 jobs:
   my_job:
-    runs-on: ubuntu-latest # Or any other runner you prefer
-
+    runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v3
 
-      - name: Run some script or command
-        run: |
-          echo "This action runs on every commit to the 'main' branch (or specified branch) and pull requests to it."
-          echo "Commit SHA: $GITHUB_SHA"
-          echo "Branch: $GITHUB_REF"
-          # Add your actual commands here. Examples:
-          # npm install
-          # npm test
-          # python -m unittest discover
-          # shellcheck your_script.sh
-          # ...
-
-      - name: Example Display changed files (optional)
+      - name: Changed files (Push)
         if: github.event_name == 'push'
         run: |
-          echo "Changed files:"
-          git diff-tree --no-commit-id --name-only -r $GITHUB_SHA^..$GITHUB_SHA
+          if [[ $(git rev-list --count HEAD) -gt 1 ]]; then
+            echo "Changed files:"
+            git diff-tree --no-commit-id --name-only HEAD^..HEAD
+          else
+            echo "Initial commit:"
+            git show --name-only HEAD
+          fi
+
+      - name: Changed files (Pull Request)
+        if: github.event_name == 'pull_request'
+        run: |
+          echo "Changed files (PR):"
+          git diff-tree --no-commit-id --name-only ${{ github.event.pull_request.base.sha }}..${{ github.event.pull_request.head.sha }}
