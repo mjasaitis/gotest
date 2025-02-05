@@ -14,25 +14,23 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          fetch-depth: 0
+          fetch-depth: ${{ github.event_name == 'pull_request' && 2 || 0 }}
           fetch-tags: true
 
-      - name: Changed files (Push)
-        if: github.event_name == 'push'
+      - name: Get changed files
+        id: changed-files
         run: |
-          if [[ $(git rev-list --count HEAD) -gt 1 ]]; then
-            echo "Changed files:"
-            git diff-tree --no-commit-id --name-only HEAD^..HEAD
+          if ${{ github.event_name == 'pull_request' }}; then
+            echo "changed_files=$(git diff --name-only -r HEAD^1 HEAD | xargs)" >> $GITHUB_OUTPUT
           else
-            echo "Initial commit:"
-            git show --name-only HEAD
+            echo "changed_files=$(git diff --name-only ${{ github.event.before }} ${{ github.event.after }} | xargs)" >> $GITHUB_OUTPUT
           fi
 
-      - name: Changed files (Pull Request)
-        if: github.event_name == 'pull_request'
+      - name: List changed files
         run: |
-          echo "Changed files (PR):"
-          git diff-tree --no-commit-id --name-only ${{ github.event.pull_request.base.sha }}..${{ github.event.pull_request.head.sha }}
+          for file in ${{ steps.changed-files.outputs.changed_files }}; do
+            echo "$file was changed"
+          done          
 
       - name: calculate version
         id: calculate-version
