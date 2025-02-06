@@ -20,8 +20,8 @@ jobs:
         id: commit_message
         run: |
           COMMIT_MESSAGE=$(git log -1 --pretty=%B) # Get the last commit message
-          echo "::set-output name=message::$COMMIT_MESSAGE"
-
+          echo "message==$(git log -1 --pretty=%B)" >> $GITHUB_OUTPUT
+          
       - name: Verify commit message format
         if: steps.commit_message.outcome == 'success' # Only run if getting message succeeded
         run: |
