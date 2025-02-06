@@ -16,6 +16,24 @@ jobs:
           fetch-depth: ${{ github.event_name == 'pull_request' && 2 || 0 }}
           fetch-tags: true
 
+      - name: Get commit message
+        id: commit_message
+        run: |
+          COMMIT_MESSAGE=$(git log -1 --pretty=%B) # Get the last commit message
+          echo "::set-output name=message::$COMMIT_MESSAGE"
+
+      - name: Verify commit message format
+        if: steps.commit_message.outcome == 'success' # Only run if getting message succeeded
+        run: |
+          MESSAGE="${{ steps.commit_message.outputs.message }}"
+          REGEX="^(fix|feat)\\(.+\\): .+$" # Updated regex
+          if [[ "$MESSAGE" =~ $REGEX ]]; then
+            echo "Commit message is valid: $MESSAGE"
+          else
+            echo "::error::Invalid commit message format: $MESSAGE"
+            exit 1 # Fail the workflow
+          fi          
+
       - name: Run ShellCheck
         uses: Azbagheri/shell-linter@latest
         with:
