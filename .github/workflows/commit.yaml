@@ -72,4 +72,5 @@ jobs:
       - name: Use version
         if: github.event_name == 'pull_request'
         run: | 
-          echo "::notice:: Calculated version: ${{ steps.calculate-version.outputs.version-string }}"    
+          echo "::notice:: Calculated version: ${{ steps.calculate-version.outputs.version-string }}"
+          exit 0
