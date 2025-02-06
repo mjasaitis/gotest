@@ -30,6 +30,8 @@ jobs:
             echo "Commit message is valid: $MESSAGE"
           else
             echo "::error::Invalid commit message format: $MESSAGE"
+            echo "::notice::Correct message format - feat(CA-xxxx): implemented security layer"
+            echo "::notice::Correct message format - fix(CA-xxxx): updated max limit"
             exit 1 # Fail the workflow
           fi          
 
