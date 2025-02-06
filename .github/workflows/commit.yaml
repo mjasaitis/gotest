@@ -2,14 +2,10 @@ name: On Commit Action
 
 on:
   push:
-    branches:
-      - main
   pull_request:
-    branches:
-      - main
 
 jobs:
-  my_job:
+  Build:
     runs-on: ubuntu-latest
     env:
       MAIN_BRANCH: main
