@@ -3,6 +3,7 @@ name: On Commit Action
 on:
   push:
   pull_request:
+    branches: [main]
 
 jobs:
   Build:
