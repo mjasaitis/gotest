@@ -176,7 +176,7 @@ check_status_and_send_event() {
   MESSAGE=$5
   FILE_NAME="${FILE_NAME}_get_txns.down"
 
-    if [ -f "${MONDIR}"/"${FILE_NAME}" ] && [[ $(ls -1 "${MONDIR}"/*get_txns.down | wc -l) -gt 1 ]] && [ "${STATUS}" == 'OK' ] ; then
+    if [ -f "${MONDIR}"/"${FILE_NAME}" ] && [[ $(find "${MONDIR}"/*get_txns.down | wc -l) -gt 1 ]] && [ "${STATUS}" == 'OK' ] ; then
     rm "${MONDIR}"/"${FILE_NAME}"
 
     else
