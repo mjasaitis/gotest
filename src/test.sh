@@ -155,7 +155,8 @@ update_incident() {
 
   INCIDENT_ID=$1
   CC=$2
-  local currenttime=$(date +%H:%M)
+  local currenttime
+  currenttime=$(date +%H:%M)
 
   if [[ "$currenttime" > "22:00" ]] || [[ "$currenttime" < "06:00" ]]; then
       curl --insecure -X PUT ${URL}/"${INCIDENT_ID}" -H 'Authorization: API-Key '${API_KEY}'' -H 'Content-Type: application/json' -d '{
@@ -175,7 +176,7 @@ check_status_and_send_event() {
   MESSAGE=$5
   FILE_NAME="${FILE_NAME}_get_txns.down"
 
-    if [ -f "${MONDIR}"/"${FILE_NAME}" ] && [[ $(ls -1 "${MONDIR}"/*get_txns.down | wc -l) -gt 1 ]] && [ "${STATUS}" == 'OK' ] ; then
+    if [ -f "${MONDIR}"/"${FILE_NAME}" ] && [[ $(find "${MONDIR}"/*get_txns.down | wc -l) -gt 1 ]] && [ "${STATUS}" == 'OK' ] ; then
     rm "${MONDIR}"/"${FILE_NAME}"
 
     else
@@ -192,7 +193,8 @@ check_status_and_send_event() {
 
     if [ ! -f "${MONDIR}"/"${FILE_NAME}" ] && [ "${STATUS}" == 'DOWN' ] ; then
 
-      local INCIDENT_ID=$(send_event "${CC}" "${MESSAGE}")
+      local INCIDENT_ID
+      INCIDENT_ID=$(send_event "${CC}" "${MESSAGE}")
       echo "$INCIDENT_ID" > "${MONDIR}"/"${FILE_NAME}"
 
     fi
