@@ -155,7 +155,8 @@ update_incident() {
 
   INCIDENT_ID=$1
   CC=$2
-  local currenttime=$(date +%H:%M)
+  local currenttime
+  currenttime=$(date +%H:%M)
 
   if [[ "$currenttime" > "22:00" ]] || [[ "$currenttime" < "06:00" ]]; then
       curl --insecure -X PUT ${URL}/"${INCIDENT_ID}" -H 'Authorization: API-Key '${API_KEY}'' -H 'Content-Type: application/json' -d '{
