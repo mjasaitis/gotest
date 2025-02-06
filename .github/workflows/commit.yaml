@@ -20,7 +20,10 @@ jobs:
         id: commit_message
         if: github.event_name == 'push'
         run: |
-          echo "message=$(git log -1 --pretty=%B)" >> $GITHUB_OUTPUT
+          COMMIT_MESSAGE=$(git log -1 --pretty=%B)
+          echo "message<<EOF" >> $GITHUB_OUTPUT
+          echo "$COMMIT_MESSAGE" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
           
       - name: Verify commit message format
         if: github.event_name == 'push' && steps.commit_message.outcome == 'success' # Only run if getting message succeeded
