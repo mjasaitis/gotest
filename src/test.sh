@@ -193,7 +193,8 @@ check_status_and_send_event() {
 
     if [ ! -f "${MONDIR}"/"${FILE_NAME}" ] && [ "${STATUS}" == 'DOWN' ] ; then
 
-      local INCIDENT_ID=$(send_event "${CC}" "${MESSAGE}")
+      local INCIDENT_ID
+      INCIDENT_ID=$(send_event "${CC}" "${MESSAGE}")
       echo "$INCIDENT_ID" > "${MONDIR}"/"${FILE_NAME}"
 
     fi
