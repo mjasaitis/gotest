@@ -15,7 +15,7 @@ jobs:
       - name: Code Checkout
         uses: actions/checkout@v3
         with:
-          fetch-depth: 2
+          fetch-depth: 0
           fetch-tags: true
 
       - name: Add tag version
@@ -29,4 +29,4 @@ jobs:
           
       - name: Use version
         run: | 
-          echo "::notice:: Calculated version: ${{ steps.calculate-version.outputs.version-string }}"    
+          echo "::notice:: Calculated version: ${{ steps.calculate-version.outputs.version-string }}" for branch  ${{ env.MAIN_BRANCH }}
