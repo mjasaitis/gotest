@@ -1,4 +1,4 @@
-name: Code pull request action
+name: Code pull request target action
 
 on:
   pull_request_target:
