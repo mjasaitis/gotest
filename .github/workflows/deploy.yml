@@ -4,13 +4,20 @@ on:
   workflow_dispatch:
     inputs:
       tag_version:
-        description: 'Tag version'
+        description: 'New Tag version'
         required: true
         type: string
+
+      tag_version_old:
+        description: 'Old Tag version'
+        required: false
+        type: string
+
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'    
 
     steps:
       - name: Checkout code  # Correct indentation for steps within 'steps'
@@ -19,3 +26,10 @@ jobs:
       - name: Deploy scripts
         run: |
           echo '${{ github.event.inputs.tag_version }}'
+          if git show-ref --verify "refs/tags/${{ github.event.inputs.tag_version }}" > /dev/null 2>&1; then
+            echo "Tag exists"
+          else
+            echo "Error: Tag ${{ github.event.inputs.tag_version }} does not exist"
+            exit 1
+          fi
+          
