@@ -3,8 +3,8 @@ name: Deploy Scripts
 on:
   workflow_dispatch:
     inputs:
-      app_version:
-        description: 'Scripts deployment'
+      tag_version:
+        description: 'Tag version'
         required: true
         type: string
 
@@ -18,4 +18,4 @@ jobs:
 
       - name: Deploy scripts
         run: |
-          echo '${{ github.event.inputs.app_version }}'
+          echo '${{ github.event.inputs.tag_version }}'
