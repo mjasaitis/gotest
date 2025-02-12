@@ -1,0 +1,31 @@
+name: Code pull request action
+
+on:
+  pull_request_target:
+    branches:
+      - main
+
+jobs:
+  pull_request:
+    runs-on: ubuntu-latest
+    env:
+      MAIN_BRANCH: main
+    steps:
+      - name: Code Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 2
+          fetch-tags: true
+
+      - name: Add tag version
+        id: calculate-version
+        uses: bitshifted/git-auto-semver@v1
+        with:
+          main_branch: env.MAIN_BRANCH
+          create_tag: true
+          tag_prefix: 'v'
+          
+      - name: Use version
+        if: github.event_name == 'pull_request'
+        run: | 
+          echo "::notice:: Calculated version: ${{ steps.calculate-version.outputs.version-string }}"    
