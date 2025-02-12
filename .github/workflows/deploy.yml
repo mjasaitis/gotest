@@ -28,15 +28,14 @@ jobs:
           
       - name: Checking tags
         run: |
-          echo '${{ github.event.inputs.tag_version }}'
           if ! git show-ref --verify "refs/tags/${{ github.event.inputs.tag_version }}" > /dev/null 2>&1; then
             echo "Error: Tag ${{ github.event.inputs.tag_version }} does not exist"
             exit 1
           fi
 
-          if ! [ -z "${{ github.event.inputs.tag_version_old }}" ]; then  # Check if input is not empty
-            if ! git show-ref --verify "refs/tags/${{ github.event.inputs.tag_version_old }}" > /dev/null 2>&1; then
-              echo "Error: Tag ${{ github.event.inputs.tag_version_old }} does not exist"
+          if ! [ -z "${{ github.event.inputs.tag_version_current }}" ]; then  # Check if input is not empty
+            if ! git show-ref --verify "refs/tags/${{ github.event.inputs.tag_version_current }}" > /dev/null 2>&1; then
+              echo "Error: Tag ${{ github.event.inputs.tag_version_current }} does not exist"
               exit 1
             fi
           fi      
