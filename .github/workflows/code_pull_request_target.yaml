@@ -1,4 +1,4 @@
-name: Code pull request action
+name: Code pull request target action
 
 on:
   pull_request_target:
@@ -6,7 +6,7 @@ on:
       - main
 
 jobs:
-  pull_request:
+  pull_request_target:
     runs-on: ubuntu-latest
     env:
       MAIN_BRANCH: main
