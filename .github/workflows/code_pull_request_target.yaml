@@ -19,6 +19,7 @@ jobs:
 
       - name: Add tag version
         id: calculate-version
+        if: github.event.action == 'closed' && github.event.pull_request.merged == true
         uses: bitshifted/git-auto-semver@v1
         with:
           main_branch: env.MAIN_BRANCH
@@ -26,6 +27,5 @@ jobs:
           tag_prefix: 'v'
           
       - name: Use version
-        if: github.event_name == 'pull_request'
         run: | 
           echo "::notice:: Calculated version: ${{ steps.calculate-version.outputs.version-string }}"    
